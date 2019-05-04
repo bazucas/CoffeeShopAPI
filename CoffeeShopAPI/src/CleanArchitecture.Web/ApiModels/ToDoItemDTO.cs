@@ -16,15 +16,15 @@ namespace CleanArchitecture.Web.ApiModels
         public string Description { get; set; }
         public bool IsDone { get; private set; }
 
-        public static ToDoItemDTO FromToDoItem(ToDoItem item)
+        public static void FromToDoItem(Menu item)
         {
-            return new ToDoItemDTO()
-            {
-                Id = item.Id,
-                Title = item.Title,
-                Description = item.Description,
-                IsDone = item.IsDone
-            };
+            //return new ToDoItemDTO()
+            //{
+            //    Id = item.Id,
+            //    Title = item.Title,
+            //    Description = item.Description,
+            //    IsDone = item.IsDone
+            //};
         }
     }
 }

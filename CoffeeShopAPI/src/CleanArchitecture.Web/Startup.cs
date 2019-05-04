@@ -33,19 +33,13 @@ namespace CleanArchitecture.Web
                 options.CheckConsentNeeded = context => true;
                 options.MinimumSameSitePolicy = SameSiteMode.None;
             });
-            // TODO: Add DbContext and IOC
-            string dbName = Guid.NewGuid().ToString();
-            services.AddDbContext<AppDbContext>(options =>
-                options.UseInMemoryDatabase(dbName));
-            //options.UseSqlServer(Configuration.GetConnectionString("DefaultConnection")));
 
-            services.AddMvc()
-                .AddControllersAsServices()
-                .SetCompatibilityVersion(CompatibilityVersion.Version_2_1);
+            services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_1);
+            services.AddDbContext<AppDbContext>(option => option.UseSqlServer(@"Data Source=(localdb)\MSSQLLocalDB;Initial Catalog=ExpressDb;"));
 
             services.AddSwaggerGen(c =>
             {
-                c.SwaggerDoc("v1", new Info { Title = "My API", Version = "v1" });
+                c.SwaggerDoc("v1", new Info { Title = "Coffee Shop API", Version = "v1" });
             });
 
             return BuildDependencyInjectionProvider(services);
@@ -59,12 +53,12 @@ namespace CleanArchitecture.Web
             builder.Populate(services);
 
             // TODO: Add Registry Classes to eliminate reference to Infrastructure
-            Assembly webAssembly = Assembly.GetExecutingAssembly();
-            Assembly coreAssembly = Assembly.GetAssembly(typeof(BaseEntity));
-            Assembly infrastructureAssembly = Assembly.GetAssembly(typeof(EfRepository)); // TODO: Move to Infrastucture Registry
+            var webAssembly = Assembly.GetExecutingAssembly();
+            var coreAssembly = Assembly.GetAssembly(typeof(BaseEntity));
+            var infrastructureAssembly = Assembly.GetAssembly(typeof(EfRepository)); // TODO: Move to Infrastucture Registry
             builder.RegisterAssemblyTypes(webAssembly, coreAssembly, infrastructureAssembly).AsImplementedInterfaces();
 
-            IContainer applicationContainer = builder.Build();
+            var applicationContainer = builder.Build();
             return new AutofacServiceProvider(applicationContainer);
         }
 
@@ -93,7 +87,8 @@ namespace CleanArchitecture.Web
             // Enable middleware to serve swagger-ui (HTML, JS, CSS, etc.), specifying the Swagger JSON endpoint.
             app.UseSwaggerUI(c =>
             {
-                c.SwaggerEndpoint("/swagger/v1/swagger.json", "My API V1");
+                c.SwaggerEndpoint("/swagger/v1/swagger.json", "Coffee Shop API");
+                c.RoutePrefix = string.Empty;
             });
 
             app.UseMvc(routes =>

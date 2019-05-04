@@ -21,13 +21,13 @@ namespace CleanArchitecture.Infrastructure.DomainEvents
 
         public void Dispatch(BaseDomainEvent domainEvent)
         {
-            Type handlerType = typeof(IHandle<>).MakeGenericType(domainEvent.GetType());
-            Type wrapperType = typeof(DomainEventHandler<>).MakeGenericType(domainEvent.GetType());
-            IEnumerable handlers = (IEnumerable)_container.Resolve(typeof(IEnumerable<>).MakeGenericType(handlerType));
-            IEnumerable<DomainEventHandler> wrappedHandlers = handlers.Cast<object>()
+            var handlerType = typeof(IHandle<>).MakeGenericType(domainEvent.GetType());
+            var wrapperType = typeof(DomainEventHandler<>).MakeGenericType(domainEvent.GetType());
+            var handlers = (IEnumerable)_container.Resolve(typeof(IEnumerable<>).MakeGenericType(handlerType));
+            var wrappedHandlers = handlers.Cast<object>()
                 .Select(handler => (DomainEventHandler)Activator.CreateInstance(wrapperType, handler));
 
-            foreach (DomainEventHandler handler in wrappedHandlers)
+            foreach (var handler in wrappedHandlers)
             {
                 handler.Handle(domainEvent);
             }

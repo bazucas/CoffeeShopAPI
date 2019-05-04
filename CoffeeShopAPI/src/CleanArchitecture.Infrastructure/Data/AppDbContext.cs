@@ -10,17 +10,19 @@ namespace CleanArchitecture.Infrastructure.Data
     {
         private readonly IDomainEventDispatcher _dispatcher;
 
-        public AppDbContext(DbContextOptions<AppDbContext> options, IDomainEventDispatcher dispatcher)
+        public AppDbContext(DbContextOptions options, IDomainEventDispatcher dispatcher)
             : base(options)
         {
             _dispatcher = dispatcher;
         }
 
-        public DbSet<ToDoItem> ToDoItems { get; set; }
+        public DbSet<Menu> Menus { get; set; }
+        public DbSet<Reservation> Reservations { get; set; }
+        public DbSet<SubMenu> SubMenus { get; set; }
 
         public override int SaveChanges()
         {
-            int result = base.SaveChanges();
+            var result = base.SaveChanges();
 
             // dispatch events only if save was successful
             var entitiesWithEvents = ChangeTracker.Entries<BaseEntity>()
